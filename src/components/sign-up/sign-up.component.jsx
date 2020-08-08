@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 //internal modules
 import GoogleBtn from '../google-btn/googleBtn.component';
+
+import { auth, createUserProfileDocument } from '../../firebase/firebase.utils';
 function Copyright() {
 	return (
 		<Typography variant="body2" color="textSecondary" align="center">
@@ -26,30 +28,54 @@ function Copyright() {
 }
 
 const useStyles = makeStyles((theme) => ({
-	paper     : {
+	paper  : {
 		marginTop     : theme.spacing(8),
 		display       : 'flex',
 		flexDirection : 'column',
 		alignItems    : 'center'
 	},
-	avatar    : {
+	avatar : {
 		margin          : theme.spacing(1),
 		backgroundColor : theme.palette.secondary.main
 	},
-	form      : {
+	form   : {
 		width     : '100%', // Fix IE 11 issue.
 		marginTop : theme.spacing(3)
 	},
 
-	submit    : {
+	submit : {
 		margin : theme.spacing(3, 0, 2)
-	},
-	
+	}
 }));
 
 function SignUp() {
 	const classes = useStyles();
+	const [ username, setUsername ] = useState('');
+	const [ email, setEmail ] = useState('');
+	const [ password, setPassword ] = useState('');
+	const handleSubmit = async (event) => {
+		event.preventDefault();
 
+		// if (password !== confirmPassword) {
+		// 	alert("Password Don't match");
+		// 	return;
+		//}
+		try {
+			const { user } = await auth.createUserWithEmailAndPassword(
+				email,
+				password
+			);
+			await createUserProfileDocument(user, {
+				username
+			});
+			//an use it to store username
+			setUsername('');
+			setEmail('');
+			setPassword('');
+		} catch (error) {
+			console.log(error.message);
+		}
+	};
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
@@ -72,6 +98,9 @@ function SignUp() {
 								id="userName"
 								label="Username"
 								autoFocus
+								value={username}
+								onChange={(event) =>
+									setUsername(event.target.value)}
 							/>
 						</Grid>
 
@@ -84,6 +113,9 @@ function SignUp() {
 								label="Email Address"
 								name="email"
 								autoComplete="email"
+								value={email}
+								onChange={(event) =>
+									setEmail(event.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={12}>
@@ -96,6 +128,9 @@ function SignUp() {
 								type="password"
 								id="password"
 								autoComplete="current-password"
+								value={password}
+								onChange={(event) =>
+									setPassword(event.target.value)}
 							/>
 						</Grid>
 					</Grid>
@@ -104,7 +139,8 @@ function SignUp() {
 						fullWidth
 						variant="contained"
 						color="secondary"
-						className={classes.submit}>
+						className={classes.submit}
+						onClick={handleSubmit}>
 						Sign Up
 					</Button>
 					<GoogleBtn />
