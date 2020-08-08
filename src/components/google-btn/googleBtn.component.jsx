@@ -5,6 +5,7 @@ import { ReactComponent as Google } from '../../assets/google-icon.svg';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import {signInWithGoogle} from '../../firebase/firebase.utils'
 const useStyles = makeStyles((theme) => ({
 	googleBtn : {
 		margin : theme.spacing(1, 0, 2)
@@ -17,7 +18,8 @@ function GoogleBtn() {
 			fullWidth
 			variant="outlined"
 			color="primary"
-			className={classes.googleBtn}>
+			className={classes.googleBtn}
+			onClick={signInWithGoogle}>
 			<Google style={{ marginRight: '0.5rem' }} />
 			Continue With Google
 		</Button>

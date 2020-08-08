@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 
 import GoogleBtn from '../google-btn/googleBtn.component';
 
+import { auth } from '../../firebase/firebase.utils';
 function Copyright() {
 	return (
 		<Typography variant="body2" color="textSecondary" align="center">
@@ -49,8 +50,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SignIn() {
+	const [ email, setEmail ] = useState('');
+	const [ password, setPassword ] = useState('');
 	const classes = useStyles();
-
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		await auth.signInWithEmailAndPassword(email, password);
+		setEmail('');
+		setPassword('');
+	};
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
@@ -70,6 +78,8 @@ function SignIn() {
 						id="email"
 						label="Email Address"
 						name="email"
+						value={email}
+						onChange={(event) => setEmail(event.target.value)}
 						autoComplete="email"
 						autoFocus
 					/>
@@ -78,10 +88,12 @@ function SignIn() {
 						margin="normal"
 						required
 						fullWidth
+						value={password}
 						name="password"
 						label="Password"
 						type="password"
 						id="password"
+						onChange={(event) => setPassword(event.target.value)}
 						autoComplete="current-password"
 					/>
 					<FormControlLabel
@@ -93,7 +105,8 @@ function SignIn() {
 						fullWidth
 						variant="contained"
 						color="primary"
-						className={classes.submit}>
+						className={classes.submit}
+						onClick={handleSubmit}>
 						Sign In
 					</Button>
 					<GoogleBtn />
